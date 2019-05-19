@@ -39,20 +39,17 @@
 """
 
 import numpy as np
-from antarray import Antenna
 from antarray import Antenna_Array
 
 
 class Linear_Array(Antenna_Array):
-    def __init__(self, size, spacing):
+    def __init__(self, size, spacing=0.5):
         self.size = size
         self.spacing = spacing
-        antenna_list = []
-        for idx in range(0, self.size):
-            antenna_list.append(Antenna(x=idx*self.spacing, y=0))
-        Antenna_Array.__init__(self, antenna_list)
+        Antenna_Array.__init__(self, x=np.arange(
+            0, size, 1)*spacing)
 
-    def get_pattern(self, theta, beam_loc=0, window=1):
+    def get_pattern(self, theta, beam_loc=0, window='square'):
         # window_type = linear_array_config['window_type_idx']
         # window_sll = linear_array_config['window_sll']
         # window_nbar = linear_array_config['window_nbar']
