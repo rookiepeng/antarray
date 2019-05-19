@@ -7,8 +7,6 @@
     This file can be imported as a module and contains the following
     class:
 
-    * Antenna
-    * Antenna_Array
     * Linear_Array
 
     ----------
@@ -41,29 +39,8 @@
 """
 
 import numpy as np
-
-
-class Antenna:
-    def __init__(self, x, y, amplitude=1, phase=0):
-        self.x = x
-        self.y = y
-        self.amplitude = amplitude
-        self.phase = phase
-
-
-class Antenna_Array:
-    def __init__(self, antenna_list):
-        self.size = len(antenna_list)
-        self.x = np.zeros(self.size)
-        self.y = np.zeros(self.size)
-        self.phase = np.zeros(self.size)
-        self.amplitude = np.zeros(self.size)
-
-        for ant_idx, ant in enumerate(antenna_list):
-            self.x[ant_idx] = ant.x
-            self.y[ant_idx] = ant.y
-            self.phase[ant_idx] = ant.phase
-            self.amplitude[ant_idx] = ant.amplitude
+from antarray import Antenna
+from antarray import Antenna_Array
 
 
 class Linear_Array(Antenna_Array):
