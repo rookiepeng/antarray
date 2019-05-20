@@ -126,7 +126,8 @@ class LinearArray(AntennaArray):
         """
 
         weight = np.exp(-1j * 2 * np.pi * self.x * np.sin(
-            beam_loc / 180 * np.pi)) * self.window_dict[window](self.size, sll, nbar)
+            beam_loc / 180 * np.pi)) * self.window_dict[window](
+                self.size, sll, nbar)
 
         weight = weight / np.sum(np.abs(weight))
 
@@ -158,7 +159,7 @@ class LinearArray(AntennaArray):
 def taylor(N, nbar=4, level=-30):
     """
     Return the Taylor window.
-    The Taylor window allows for a selectable sidelobe suppression with a 
+    The Taylor window allows for a selectable sidelobe suppression with a
     minimum broadening. This window is commonly used in radar processing [1].
 
     Parameters
@@ -183,7 +184,7 @@ def taylor(N, nbar=4, level=-30):
 
     References
     -----
-    .. [1] W. Carrara, R. Goodman, and R. Majewski "Spotlight Synthetic 
+    .. [1] W. Carrara, R. Goodman, and R. Majewski "Spotlight Synthetic
                Aperture Radar: Signal Processing Algorithms" Pages 512-513,
                July 1995.
     """
