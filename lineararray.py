@@ -10,7 +10,7 @@
     * LinearArray
 
     ----------
-    Antarray - Antenna Array Analysis Module
+    AntArray - Antenna Array Analysis Module
     Copyright (C) 2018 - 2019  Zhengyu Peng
     E-mail: zpeng.me@gmail.com
     Website: https://zpeng.me
@@ -48,11 +48,11 @@ class LinearArray(AntennaArray):
         self.size = size
         self.spacing = spacing
         self.window_dict = {
-            'square': self.square_win,
-            'chebyshev': self.chebyshev_win,
-            'taylor': self.taylor_win,
-            'hamming': self.hamming_win,
-            'hanning': self.hann_win
+            'Square': self.square_win,
+            'Chebyshev': self.chebyshev_win,
+            'Taylor': self.taylor_win,
+            'Hamming': self.hamming_win,
+            'Hanning': self.hann_win
         }
         AntennaArray.__init__(self, x=np.arange(
             0, size, 1)*spacing)

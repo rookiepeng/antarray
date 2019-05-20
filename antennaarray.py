@@ -7,7 +7,7 @@
     * AntennaArray
 
     ----------
-    Antarray - Antenna Array Analysis Module
+    AntArray - Antenna Array Analysis Module
     Copyright (C) 2018 - 2019  Zhengyu Peng
     E-mail: zpeng.me@gmail.com
     Website: https://zpeng.me
