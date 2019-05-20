@@ -44,7 +44,32 @@ from antarray import AntennaArray
 
 
 class LinearArray(AntennaArray):
+    """
+    A class defines basic parameters of a linear array.
+    Inheritance of AntennaArray
+
+    ...
+
+    Attributes
+    ----------
+    size : int
+        Total size of the linear array
+    spacing : float
+        Spacing between antenna elements
+        (Normalized to wavelength)
+    """
+
     def __init__(self, size, spacing=0.5):
+        """
+        Parameters
+        ----------
+        size : int
+            Total size of the linear array
+        spacing : float, optional
+            Spacing between antenna elements
+            (Normalized to wavelength), (default is 0.5)
+        """
+
         self.size = size
         self.spacing = spacing
         self.window_dict = {
@@ -57,7 +82,49 @@ class LinearArray(AntennaArray):
         AntennaArray.__init__(self, x=np.arange(
             0, size, 1)*spacing)
 
+    def update_parameters(self, **kwargs):
+        """
+        Update linear array parameters
+
+        Parameters
+        ----------
+        size : int
+            Total size of the linear array
+        spacing : float
+            Spacing between antenna elements
+        """
+
+        keys = ['size', 'spacing']
+        self.__dict__.update((k, v) for k, v in kwargs.items() if k in keys)
+        self.__init__(self.size, self.spacing)
+
     def get_pattern(self, theta, beam_loc=0, window='square', sll=-60, nbar=4):
+        """
+        Calculate the array factor
+
+        Parameters
+        ----------
+        theta : 1-D array
+            Angles for calculation (deg)
+        beam_loc : float, optional
+            Angle of the main beam (deg) (default is 0)
+        window : str, optional
+            Window type, supports `Square`, `Chebyshev`, `Taylor`, `Hamming`,
+            and, `Hanning`
+            (default is `Square`)
+        sll : float, optional
+            Desired peak sidelobe level in decibels (dB) relative to
+            the mainlobe (default is -60)
+        nbar : int, optional
+            Number of nearly constant level sidelobes adjacent to the mainlobe
+            (Only works with Taylor window) (default is 4)
+
+        Returns
+        -------
+        AF : 1-D array
+            Array pattern in decibels (dB)
+        """
+
         weight = np.exp(-1j * 2 * np.pi * self.x * np.sin(
             beam_loc / 180 * np.pi)) * self.window_dict[window](self.size, sll, nbar)
 
@@ -71,11 +138,6 @@ class LinearArray(AntennaArray):
         AF = 20 * np.log10(np.abs(np.matmul(weight, A)) + 0.00001)
 
         return AF
-
-    def update_parameters(self, **kwargs):
-        keys = ['size', 'spacing']
-        self.__dict__.update((k, v) for k, v in kwargs.items() if k in keys)
-        self.__init__(self.size, self.spacing)
 
     def square_win(self, *args, **kwargs):
         return 1
@@ -98,6 +160,7 @@ def taylor(N, nbar=4, level=-30):
     Return the Taylor window.
     The Taylor window allows for a selectable sidelobe suppression with a 
     minimum broadening. This window is commonly used in radar processing [1].
+
     Parameters
     ----------
     M : int
@@ -107,14 +170,17 @@ def taylor(N, nbar=4, level=-30):
         Number of nearly constant level sidelobes adjacent to the mainlobe
     level : float
         Desired peak sidelobe level in decibels (db) relative to the mainlobe
+
     Returns
     -------
     out : array
         The window, with the center value normalized to one (the value
         one appears only if the number of samples is odd).
+
     See Also
     --------
     kaiser, bartlett, blackman, hamming, hanning
+
     References
     -----
     .. [1] W. Carrara, R. Goodman, and R. Majewski "Spotlight Synthetic 
