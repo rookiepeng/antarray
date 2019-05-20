@@ -1,13 +1,13 @@
 """
-    This script contains classes for antenna arrays
+    This script contains classes for a linear array
 
-    This script requires that `numpy` be installed within the Python
-    environment you are running this script in.
+    This script requires that `numpy` and `scipy` be installed within
+    the Python environment you are running this script in.
 
     This file can be imported as a module and contains the following
     class:
 
-    * Linear_Array
+    * LinearArray
 
     ----------
     Antarray - Antenna Array Analysis Module
@@ -39,11 +39,11 @@
 """
 
 import numpy as np
-from antarray import Antenna_Array
 from scipy.signal import chebwin, hamming, hann
+from antarray import AntennaArray
 
 
-class Linear_Array(Antenna_Array):
+class LinearArray(AntennaArray):
     def __init__(self, size, spacing=0.5):
         self.size = size
         self.spacing = spacing
@@ -54,13 +54,12 @@ class Linear_Array(Antenna_Array):
             'hamming': self.hamming_win,
             'hanning': self.hann_win
         }
-        Antenna_Array.__init__(self, x=np.arange(
+        AntennaArray.__init__(self, x=np.arange(
             0, size, 1)*spacing)
 
     def get_pattern(self, theta, beam_loc=0, window='square', sll=-60, nbar=4):
         weight = np.exp(-1j * 2 * np.pi * self.x * np.sin(
-            beam_loc / 180 * np.pi))
-        * self.window_dict[window](self.size, sll, nbar)
+            beam_loc / 180 * np.pi)) * self.window_dict[window](self.size, sll, nbar)
 
         weight = weight / np.sum(np.abs(weight))
 

@@ -1,13 +1,10 @@
 """
-    This script contains classes for antenna arrays
-
-    This script requires that `numpy` be installed within the Python
-    environment you are running this script in.
+    This script contains classes for an antenna array
 
     This file can be imported as a module and contains the following
     class:
 
-    * Antenna_Array
+    * AntennaArray
 
     ----------
     Antarray - Antenna Array Analysis Module
@@ -38,10 +35,33 @@
 
 """
 
-import numpy as np
 
+class AntennaArray:
+    """
+    A class defines basic parameters of an antenna array
 
-class Antenna_Array:
+    ...
+
+    Attributes
+    ----------
+    x : 1-d array
+        Locations of the antenna elements on x-axis
+        (Normalized to wavelength)
+    y : 1-d array
+        Locations of the antenna elements on y-axis
+        (Normalized to wavelength)
+    """
+
     def __init__(self, x, y=0):
+        """
+        Parameters
+        ----------
+        x : 1-d array
+            Locations of the antenna elements on x-axis
+            (Normalized to wavelength)
+        y : 1-d array, optional
+            Locations of the antenna elements on y-axis
+            (Normalized to wavelength), (default is 0)
+        """
         self.x = x
         self.y = y
