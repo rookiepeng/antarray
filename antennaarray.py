@@ -1,3 +1,5 @@
+#!python
+#cython: language_level=3
 """
     This script contains classes for an antenna array
 
