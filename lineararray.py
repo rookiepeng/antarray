@@ -82,7 +82,7 @@ class LinearArray(AntennaArray):
             'Hanning': self.hann_win
         }
         AntennaArray.__init__(self, x=np.arange(
-            0, size, 1)*spacing)
+            0, size, 1)*spacing, y=np.zeros(size))
 
     def update_parameters(self, **kwargs):
         """
@@ -138,9 +138,10 @@ class LinearArray(AntennaArray):
         A = np.exp(1j * 2 * np.pi * array_geometry_grid * np.sin(
             theta_grid / 180 * np.pi))
 
-        AF = 20 * np.log10(np.abs(np.matmul(weight, A)) + 0.00001)
+        AF = np.matmul(weight, A)
 
-        return AF
+        return {'array_factor': AF,
+                'weight': weight}
 
     def square_win(self, *args, **kwargs):
         return 1
