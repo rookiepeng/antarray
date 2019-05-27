@@ -37,6 +37,8 @@
 
 """
 
+import numpy as np
+
 
 class AntennaArray:
     """
@@ -67,3 +69,41 @@ class AntennaArray:
         """
         self.x = x
         self.y = y
+
+    def get_pattern(self, u,
+                    v,
+                    weight=None,
+                    polar=True):
+        """
+        Calculate the array factor
+
+        Parameters
+        ----------
+        theta : 1-D array
+            Angles for calculation (deg)
+
+        Returns
+        -------
+        AF : 1-D array
+            Array pattern in decibels (dB)
+        """
+
+        if polar:
+            theta_grid, phi_grid = np.meshgrid(u, v)
+            u_grid = np.sin(theta_grid / 180 * np.pi) * \
+                np.cos(phi_grid/180*np.pi)
+            v_grid = np.sin(theta_grid / 180 * np.pi) * \
+                np.sin(phi_grid/180*np.pi)
+        else:
+            u_grid, v_grid = np.meshgrid(u, v)
+
+        size = len(self.x)
+        AF = np.zeros(np.shape(u_grid), dtype=complex)
+
+        for idx in range(0, size):
+            AF = AF + np.exp(1j * 2 * np.pi *
+                             (self.x[idx]*u_grid + self.y[idx]*v_grid))
+
+        return {'u': u_grid,
+                'v': v_grid,
+                'array_factor': AF}
