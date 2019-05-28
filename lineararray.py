@@ -100,7 +100,7 @@ class LinearArray(AntennaArray):
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in keys)
         self.__init__(self.size, self.spacing)
 
-    def get_pattern(self, theta, beam_loc=0, window='square', sll=-60, nbar=4):
+    def get_pattern(self, theta, beam_loc=0, window='Square', sll=-60, nbar=4):
         """
         Calculate the array factor
 
