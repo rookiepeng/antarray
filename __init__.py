@@ -30,6 +30,7 @@
 
 """
 
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 from .antennaarray import AntennaArray
 from .lineararray import LinearArray
+from .rectarray import RectArray
