@@ -117,10 +117,12 @@ class RectArray(AntennaArray):
 
         keys = ['sizex', 'sizey', 'spacingx', 'spacingy']
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in keys)
-        self.__init__(self.size, self.spacing)
+        self.__init__(self.sizex, self.sizey, self.spacingx, self.spacingy)
 
     def get_pattern(self, u,
                     v,
+                    Nx=256,
+                    Ny=256,
                     beam_theta=0,
                     beam_phi=0,
                     windowx='Square',
@@ -156,11 +158,13 @@ class RectArray(AntennaArray):
             Array pattern in decibels (dB)
         """
 
-        x_grid, y_grid = np.meshgrid(self.x, self.y)
+        y_grid, x_grid = np.meshgrid(self.y, self.x)
 
-        window = np.matmul(np.transpose(np.array([self.window_dict[windowy](
-            self.sizey, slly, nbary)])), np.array([self.window_dict[windowx](
-                self.sizex, sllx, nbarx)]))
+        xy = np.ones((self.sizex, self.sizey), dtype=complex)
+
+        window = np.matmul(np.transpose(np.array([self.window_dict[windowx](
+            self.sizex, sllx, nbarx)])), np.array([self.window_dict[windowy](
+                self.sizey, slly, nbary)]))
 
         weight = np.exp(-1j * 2 * np.pi * (x_grid * np.sin(
             beam_theta / 180 * np.pi)*np.cos(
@@ -170,31 +174,13 @@ class RectArray(AntennaArray):
 
         weight = weight / np.sum(np.abs(weight))
 
-        if polar:
-            theta_grid, phi_grid = np.meshgrid(u, v)
-            u_grid = np.sin(theta_grid / 180 * np.pi) * \
-                np.cos(phi_grid/180*np.pi)
-            v_grid = np.sin(theta_grid / 180 * np.pi) * \
-                np.sin(phi_grid/180*np.pi)
-        else:
-            u_grid, v_grid = np.meshgrid(u, v)
+        AF = np.fft.fftshift(np.fft.fft2(xy*weight, (Nx, Ny)))
 
-        AF = np.zeros(np.shape(u_grid), dtype=complex)
-
-        for idx_x in range(0, self.sizex):
-            for idx_y in range(0, self.sizey):
-                AF = AF + \
-                    np.exp(
-                        1j * 2 * np.pi * (self.x[idx_x]*u_grid +
-                                          self.y[idx_y]*v_grid)) * \
-                    weight[idx_y, idx_x]
-
-        return {'u': u_grid,
-                'v': v_grid,
-                'array_factor': AF,
+        return {'array_factor': AF,
                 'x': x_grid,
                 'y': y_grid,
-                'weight': weight}
+                'weight': weight,
+                'xy': xy}
 
     def square_win(self, array_size, *args, **kwargs):
         return np.ones(array_size)
