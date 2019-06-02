@@ -166,11 +166,9 @@ class RectArray(AntennaArray):
             self.sizex, sllx, nbarx)])), np.array([self.window_dict[windowy](
                 self.sizey, slly, nbary)]))
 
-        weight = np.exp(-1j * 2 * np.pi * (x_grid * np.sin(
-            beam_theta / 180 * np.pi)*np.cos(
-                beam_phi/180*np.pi) + y_grid*np.sin(
-                    beam_theta / 180 * np.pi) * np.sin(
-                        beam_phi/180*np.pi)))*window
+        weight = np.exp(1j * 2 * np.pi * (x_grid * np.sin(
+            beam_theta / 180 * np.pi) + y_grid * np.sin(
+            beam_phi/180*np.pi)))*window
 
         weight = weight / np.sum(np.abs(weight))
 
