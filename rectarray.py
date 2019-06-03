@@ -119,12 +119,11 @@ class RectArray(AntennaArray):
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in keys)
         self.__init__(self.sizex, self.sizey, self.spacingx, self.spacingy)
 
-    def get_pattern(self, u,
-                    v,
-                    Nx=256,
-                    Ny=256,
-                    beam_theta=0,
-                    beam_phi=0,
+    def get_pattern(self,
+                    Nx=512,
+                    Ny=512,
+                    beam_az=0,
+                    beam_el=0,
                     windowx='Square',
                     sllx=-60,
                     nbarx=4,
@@ -167,18 +166,15 @@ class RectArray(AntennaArray):
                 self.sizey, slly, nbary)]))
 
         weight = np.exp(1j * 2 * np.pi * (x_grid * np.sin(
-            beam_theta / 180 * np.pi) + y_grid * np.sin(
-            beam_phi/180*np.pi)))*window
+            beam_az / 180 * np.pi) + y_grid * np.sin(
+            beam_el/180*np.pi)))*window
 
         weight = weight / np.sum(np.abs(weight))
 
         AF = np.fft.fftshift(np.fft.fft2(xy*weight, (Nx, Ny)))
 
         return {'array_factor': AF,
-                'x': x_grid,
-                'y': y_grid,
-                'weight': weight,
-                'xy': xy}
+                'weight': weight}
 
     def square_win(self, array_size, *args, **kwargs):
         return np.ones(array_size)
