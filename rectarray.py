@@ -129,8 +129,7 @@ class RectArray(AntennaArray):
                     nbarx=4,
                     windowy='Square',
                     slly=-60,
-                    nbary=4,
-                    polar=True):
+                    nbary=4):
         """
         Calculate the array factor
 
@@ -174,7 +173,9 @@ class RectArray(AntennaArray):
         AF = np.fft.fftshift(np.fft.fft2(xy*weight, (Nx, Ny)))
 
         return {'array_factor': AF,
-                'weight': weight}
+                'weight': weight,
+                'x': x_grid,
+                'y': y_grid}
 
     def square_win(self, array_size, *args, **kwargs):
         return np.ones(array_size)
