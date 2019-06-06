@@ -129,7 +129,9 @@ class RectArray(AntennaArray):
                     nbarx=4,
                     windowy='Square',
                     slly=-60,
-                    nbary=4):
+                    nbary=4,
+                    plot_az=None,
+                    plot_el=None):
         """
         Calculate the array factor
 
@@ -155,7 +157,6 @@ class RectArray(AntennaArray):
         AF : 1-D array
             Array pattern in decibels (dB)
         """
-
         y_grid, x_grid = np.meshgrid(self.y, self.x)
 
         xy = np.ones((self.sizex, self.sizey), dtype=complex)
@@ -170,12 +171,67 @@ class RectArray(AntennaArray):
 
         weight = weight / np.sum(np.abs(weight))
 
-        AF = np.fft.fftshift(np.fft.fft2(xy*weight, (Nx, Ny)))
+        tilex = int(np.ceil(self.spacingx-0.5))*2+1
+        k_az = 0.5*np.linspace(-tilex, tilex, Nx*tilex)/self.spacingx
+        tiley = int(np.ceil(self.spacingy-0.5))*2+1
+        k_el = 0.5*np.linspace(-tiley, tiley, Ny*tiley)/self.spacingy
 
-        return {'array_factor': AF,
-                'weight': weight,
-                'x': x_grid,
-                'y': y_grid}
+        if Ny <= 1 and Nx > 1:
+            A = np.fft.fftshift(np.fft.fft(xy*weight, Nx, axis=0), axes=0)
+            if plot_el is None:
+                plot_weight = np.array(
+                    [np.exp(-1j * 2 * np.pi * self.y * np.sin(
+                        beam_el / 180 * np.pi))])
+            else:
+                plot_weight = np.array(
+                    [np.exp(-1j * 2 * np.pi * self.y * np.sin(
+                        plot_el / 180 * np.pi))])
+
+            AF = np.matmul(A, np.transpose(plot_weight))[:, 0]
+            AF = np.tile(AF, tilex)
+            AF = AF[np.where(np.logical_and(
+                k_az >= -1, k_az <= 1))[0]]
+            k_az = k_az[np.where(np.logical_and(
+                k_az >= -1, k_az <= 1))[0]]
+
+        elif Nx <= 1 and Ny > 1:
+            A = np.fft.fftshift(np.fft.fft(xy*weight, Ny, axis=1), axes=1)
+            if plot_az is None:
+                plot_weight = np.array(
+                    [np.exp(-1j * 2 * np.pi * self.x * np.sin(
+                        beam_az / 180 * np.pi))])
+            else:
+                plot_weight = np.array(
+                    [np.exp(-1j * 2 * np.pi * self.x * np.sin(
+                        plot_az / 180 * np.pi))])
+
+            AF = np.matmul(np.transpose(A), np.transpose(plot_weight))[:, 0]
+            AF = np.tile(AF, tiley)
+            AF = AF[np.where(np.logical_and(
+                k_el >= -1, k_el <= 1))[0]]
+            k_az = k_az[np.where(np.logical_and(
+                k_el >= -1, k_el <= 1))[0]]
+
+        elif Ny > 1 and Nx > 1:
+            AF = np.fft.fftshift(np.fft.fft2(xy*weight, (Nx, Ny)))
+            AF = np.tile(AF, (tilex, 1))
+            AF = np.tile(AF, (1, tiley))
+            AF = AF[np.where(np.logical_and(
+                k_az >= -1, k_az <= 1))[0], :]
+            AF = AF[:, np.where(np.logical_and(
+                k_el >= -1, k_el <= 1))[0]]
+            k_az = k_az[np.where(np.logical_and(
+                k_az >= -1, k_az <= 1))[0]]
+            k_el = k_el[np.where(np.logical_and(
+                k_el >= -1, k_el <= 1))[0]]
+
+        return {
+            'array_factor': AF,
+            'weight': weight,
+            'x': x_grid,
+            'y': y_grid,
+            'azimuth': np.arcsin(k_az)/np.pi*180,
+            'elevation': np.arcsin(k_el)/np.pi*180}
 
     def square_win(self, array_size, *args, **kwargs):
         return np.ones(array_size)
