@@ -120,8 +120,8 @@ class RectArray(AntennaArray):
         self.__init__(self.sizex, self.sizey, self.spacingx, self.spacingy)
 
     def get_pattern(self,
-                    Nx=512,
-                    Ny=512,
+                    nfft_az=512,
+                    nfft_el=512,
                     beam_az=0,
                     beam_el=0,
                     windowx='Square',
@@ -172,20 +172,22 @@ class RectArray(AntennaArray):
         weight = weight / np.sum(np.abs(weight))
 
         tilex = int(np.ceil(self.spacingx-0.5))*2+1
-        k_az = 0.5*np.linspace(-tilex, tilex, Nx*tilex)/self.spacingx
+        k_az = 0.5*np.linspace(-tilex, tilex, nfft_az*tilex)/self.spacingx
         tiley = int(np.ceil(self.spacingy-0.5))*2+1
-        k_el = 0.5*np.linspace(-tiley, tiley, Ny*tiley)/self.spacingy
+        k_el = 0.5*np.linspace(-tiley, tiley, nfft_el*tiley)/self.spacingy
 
-        if Ny <= 1 and Nx > 1:
-            A = np.fft.fftshift(np.fft.fft(xy*weight, Nx, axis=0), axes=0)
+        if nfft_el <= 1 and nfft_az > 1:
+            A = np.fft.fftshift(np.fft.fft(xy*weight, nfft_az, axis=0), axes=0)
             if plot_el is None:
                 plot_weight = np.array(
                     [np.exp(-1j * 2 * np.pi * self.y * np.sin(
                         beam_el / 180 * np.pi))])
+                elevation = np.array(beam_el)
             else:
                 plot_weight = np.array(
                     [np.exp(-1j * 2 * np.pi * self.y * np.sin(
                         plot_el / 180 * np.pi))])
+                elevation = np.array(plot_el)
 
             AF = np.matmul(A, np.transpose(plot_weight))[:, 0]
             AF = np.tile(AF, tilex)
@@ -193,17 +195,20 @@ class RectArray(AntennaArray):
                 k_az >= -1, k_az <= 1))[0]]
             k_az = k_az[np.where(np.logical_and(
                 k_az >= -1, k_az <= 1))[0]]
+            azimuth = np.arcsin(k_az)/np.pi*180
 
-        elif Nx <= 1 and Ny > 1:
-            A = np.fft.fftshift(np.fft.fft(xy*weight, Ny, axis=1), axes=1)
+        elif nfft_az <= 1 and nfft_el > 1:
+            A = np.fft.fftshift(np.fft.fft(xy*weight, nfft_el, axis=1), axes=1)
             if plot_az is None:
                 plot_weight = np.array(
                     [np.exp(-1j * 2 * np.pi * self.x * np.sin(
                         beam_az / 180 * np.pi))])
+                azimuth = np.array(beam_az)
             else:
                 plot_weight = np.array(
                     [np.exp(-1j * 2 * np.pi * self.x * np.sin(
                         plot_az / 180 * np.pi))])
+                azimuth = np.array(plot_az)
 
             AF = np.matmul(np.transpose(A), np.transpose(plot_weight))[:, 0]
             AF = np.tile(AF, tiley)
@@ -211,9 +216,10 @@ class RectArray(AntennaArray):
                 k_el >= -1, k_el <= 1))[0]]
             k_el = k_el[np.where(np.logical_and(
                 k_el >= -1, k_el <= 1))[0]]
+            elevation = np.arcsin(k_el)/np.pi*180
 
-        elif Ny > 1 and Nx > 1:
-            AF = np.fft.fftshift(np.fft.fft2(xy*weight, (Nx, Ny)))
+        elif nfft_el > 1 and nfft_az > 1:
+            AF = np.fft.fftshift(np.fft.fft2(xy*weight, (nfft_az, nfft_el)))
             AF = np.tile(AF, (tilex, 1))
             AF = np.tile(AF, (1, tiley))
             AF = AF[np.where(np.logical_and(
@@ -224,14 +230,16 @@ class RectArray(AntennaArray):
                 k_az >= -1, k_az <= 1))[0]]
             k_el = k_el[np.where(np.logical_and(
                 k_el >= -1, k_el <= 1))[0]]
+            azimuth = np.arcsin(k_az)/np.pi*180
+            elevation = np.arcsin(k_el)/np.pi*180
 
         return {
             'array_factor': AF,
             'weight': weight,
             'x': x_grid,
             'y': y_grid,
-            'azimuth': np.arcsin(k_az)/np.pi*180,
-            'elevation': np.arcsin(k_el)/np.pi*180}
+            'azimuth': azimuth,
+            'elevation': elevation}
 
     def square_win(self, array_size, *args, **kwargs):
         return np.ones(array_size)
