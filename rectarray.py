@@ -209,7 +209,7 @@ class RectArray(AntennaArray):
             AF = np.tile(AF, tiley)
             AF = AF[np.where(np.logical_and(
                 k_el >= -1, k_el <= 1))[0]]
-            k_az = k_az[np.where(np.logical_and(
+            k_el = k_az[np.where(np.logical_and(
                 k_el >= -1, k_el <= 1))[0]]
 
         elif Ny > 1 and Nx > 1:
