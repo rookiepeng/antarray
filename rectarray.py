@@ -137,25 +137,61 @@ class RectArray(AntennaArray):
 
         Parameters
         ----------
-        theta : 1-D array
-            Angles for calculation (deg)
-        beam_loc : float, optional
-            Angle of the main beam (deg) (default is 0)
-        window : str, optional
-            Window type, supports `Square`, `Chebyshev`, `Taylor`, `Hamming`,
-            and, `Hanning`
+        nfft_az : int, optional
+            FFT points for azimuth beamforming.
+            Azimuth is the plane of x. (default is 512)
+        nfft_el : int, optional
+            FFT points for elevation beamforming.
+            Elevation is the plane of y. (default is 512)
+        beam_az : float, optional
+            Angle of the main beam (deg) on azimuth. (default is 0)
+        beam_el : float, optional
+            Angle of the main beam (deg) on elevation. (default is 0)
+        windowx : str, optional
+            Window type along x axis, supports `Square`, `Chebyshev`,
+            `Taylor`, `Hamming`, and, `Hanning`
             (default is `Square`)
-        sll : float, optional
+        sllx : float, optional
             Desired peak sidelobe level in decibels (dB) relative to
-            the mainlobe (default is -60)
-        nbar : int, optional
+            the mainlobe for window along x axis. Only valid with
+            Chebyshev window and Taylor window. (default is -60)
+        nbarx : int, optional
             Number of nearly constant level sidelobes adjacent to the mainlobe
-            (Only works with Taylor window) (default is 4)
+            along x axis. Only works with Taylor window. (default is 4)
+        windowy : str, optional
+            Window type along y axis, supports `Square`, `Chebyshev`,
+            `Taylor`, `Hamming`, and, `Hanning`
+            (default is `Square`)
+        slly : float, optional
+            Desired peak sidelobe level in decibels (dB) relative to
+            the mainlobe for window along y axis. Only valid with
+            Chebyshev window and Taylor window. (default is -60)
+        nbary : int, optional
+            Number of nearly constant level sidelobes adjacent to the mainlobe
+            along y axis. Only works with Taylor window. (default is 4)
+        plot_az : float, optional
+            If `nfft_az == 1`, `plot_az` indicates the azimuth angle of the
+            returned elevation pattern. (default `plot_az = beam_az`)
+        plot_el : float, optional
+            If `nfft_el == 1`, `plot_el` indicates the elevation angle of the
+            returned azimuth pattern. (default `plot_el = beam_el`)
 
         Returns
         -------
-        AF : 1-D array
-            Array pattern in decibels (dB)
+        dict(
+            'array_factor' : 1-D array or 2-D array
+                Antenna array pattern.
+            'weight' : 2-D array
+                Weights for array elements
+            'x' : 1-D array
+                x axis locations of antenna array elements
+            'y' : 1-D array
+                y axis locations of antenna array elements
+            'azimuth' : 1-D array
+                Corresponded azimuth angles for `array_factor
+            'elevation' : 1-D array
+                Corresponded elevation angles for `array_factor
+        )
         """
         y_grid, x_grid = np.meshgrid(self.y, self.x)
 
