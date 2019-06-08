@@ -41,7 +41,7 @@
 """
 
 import numpy as np
-from scipy.signal import chebwin, hamming, hann
+from scipy import signal
 from antarray import AntennaArray
 
 
@@ -147,16 +147,16 @@ class LinearArray(AntennaArray):
         return 1
 
     def chebyshev_win(self, array_size, sll, *args, **kwargs):
-        return chebwin(array_size, at=sll)
+        return signal.chebwin(array_size, at=sll)
 
     def taylor_win(self, array_size, sll, nbar):
         return taylor(array_size, nbar, -sll)
 
     def hamming_win(self, array_size, *args, **kwargs):
-        return hamming(array_size)
+        return signal.hamming(array_size)
 
     def hann_win(self, array_size, *args, **kwargs):
-        return hann(array_size)
+        return signal.hann(array_size)
 
 
 def taylor(N, nbar=4, level=-30):
