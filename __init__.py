@@ -31,6 +31,9 @@
 """
 
 __version__ = '1.0.2'
+import numpy
+from scipy import signal
+
 from .antennaarray import AntennaArray
 from .lineararray import LinearArray
 from .rectarray import RectArray
