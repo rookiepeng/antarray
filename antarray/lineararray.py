@@ -151,10 +151,10 @@ class LinearArray(AntennaArray):
         return 1
 
     def chebyshev_win(self, array_size, sll, *args, **kwargs):
-        return signal.chebwin(array_size, at=sll)
+        return signal.chebwin(array_size, at=-sll)
 
     def taylor_win(self, array_size, sll, nbar):
-        return taylor(array_size, nbar, -sll)
+        return taylor(array_size, nbar, sll)
 
     def hamming_win(self, array_size, *args, **kwargs):
         return signal.hamming(array_size)
