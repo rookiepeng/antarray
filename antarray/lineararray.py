@@ -123,8 +123,12 @@ class LinearArray(AntennaArray):
 
         Returns
         -------
-        AF : 1-D array
-            Array pattern in decibels (dB)
+        dict(
+            array_factor : 1-D array
+                Array pattern in linear scale
+            weight : 1-D array
+                Element weighting to form the pattern
+        )
         """
 
         weight = np.exp(-1j * 2 * np.pi * self.x * np.sin(
