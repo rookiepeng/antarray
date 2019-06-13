@@ -93,9 +93,11 @@ class RectArray(AntennaArray):
             'Hamming': self.hamming_win,
             'Hanning': self.hann_win
         }
-        AntennaArray.__init__(self, x=np.arange(
-            0, sizex, 1)*spacingx, y=np.arange(
-            0, sizey, 1)*spacingy)
+        loc_x = np.arange(0, sizex, 1)*spacingx
+        loc_y = np.arange(0, sizey, 1)*spacingy
+
+        AntennaArray.__init__(self, x=np.tile(
+            loc_x, sizey), y=np.repeat(loc_y, sizex))
 
     def update_parameters(self, **kwargs):
         """
