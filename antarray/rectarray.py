@@ -185,17 +185,15 @@ class RectArray(AntennaArray):
                 Antenna array pattern.
             'weight' : 2-D array
                 Weights for array elements
-            'x' : 1-D array
-                x axis locations of antenna array elements
-            'y' : 1-D array
-                y axis locations of antenna array elements
             'azimuth' : 1-D array
                 Corresponded azimuth angles for `array_factor
             'elevation' : 1-D array
                 Corresponded elevation angles for `array_factor
         )
         """
-        y_grid, x_grid = np.meshgrid(self.y, self.x)
+        y_grid, x_grid = np.meshgrid(np.arange(
+            0, self.sizey, 1)*self.spacingy, np.arange(
+                0, self.sizex, 1)*self.spacingx)
 
         xy = np.ones((self.sizex, self.sizey), dtype=complex)
 
@@ -274,8 +272,6 @@ class RectArray(AntennaArray):
         return {
             'array_factor': AF,
             'weight': weight,
-            'x': x_grid,
-            'y': y_grid,
             'azimuth': azimuth,
             'elevation': elevation}
 
