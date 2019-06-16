@@ -93,11 +93,11 @@ class RectArray(AntennaArray):
             'Hamming': self.hamming_win,
             'Hanning': self.hann_win
         }
-        loc_x = np.arange(0, sizex, 1)*spacingx
-        loc_y = np.arange(0, sizey, 1)*spacingy
+        self.x_array = np.arange(0, self.sizex, 1)*self.spacingx
+        self.y_array = np.arange(0, self.sizey, 1)*self.spacingy
 
         AntennaArray.__init__(self, x=np.tile(
-            loc_x, sizey), y=np.repeat(loc_y, sizex))
+            self.x_array, self.sizey), y=np.repeat(self.y_array, self.sizex))
 
     def update_parameters(self, **kwargs):
         """
@@ -191,9 +191,7 @@ class RectArray(AntennaArray):
                 Corresponded elevation angles for `array_factor
         )
         """
-        y_grid, x_grid = np.meshgrid(np.arange(
-            0, self.sizey, 1)*self.spacingy, np.arange(
-                0, self.sizex, 1)*self.spacingx)
+        y_grid, x_grid = np.meshgrid(self.y_array, self.x_array)
 
         xy = np.ones((self.sizex, self.sizey), dtype=complex)
 
@@ -216,15 +214,14 @@ class RectArray(AntennaArray):
             A = np.fft.fftshift(np.fft.fft(xy*weight, nfft_az, axis=0), axes=0)
             if plot_el is None:
                 plot_weight = np.array(
-                    [np.exp(-1j * 2 * np.pi * self.y * np.sin(
+                    [np.exp(-1j * 2 * np.pi * self.y_array * np.sin(
                         beam_el / 180 * np.pi))])
                 elevation = np.array(beam_el)
             else:
                 plot_weight = np.array(
-                    [np.exp(-1j * 2 * np.pi * self.y * np.sin(
+                    [np.exp(-1j * 2 * np.pi * self.y_array * np.sin(
                         plot_el / 180 * np.pi))])
                 elevation = np.array(plot_el)
-
             AF = np.matmul(A, np.transpose(plot_weight))[:, 0]
             AF = np.tile(AF, tilex)
             AF = AF[np.where(np.logical_and(
@@ -237,12 +234,12 @@ class RectArray(AntennaArray):
             A = np.fft.fftshift(np.fft.fft(xy*weight, nfft_el, axis=1), axes=1)
             if plot_az is None:
                 plot_weight = np.array(
-                    [np.exp(-1j * 2 * np.pi * self.x * np.sin(
+                    [np.exp(-1j * 2 * np.pi * self.x_array * np.sin(
                         beam_az / 180 * np.pi))])
                 azimuth = np.array(beam_az)
             else:
                 plot_weight = np.array(
-                    [np.exp(-1j * 2 * np.pi * self.x * np.sin(
+                    [np.exp(-1j * 2 * np.pi * self.x_array * np.sin(
                         plot_az / 180 * np.pi))])
                 azimuth = np.array(plot_az)
 
