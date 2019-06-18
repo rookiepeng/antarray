@@ -206,9 +206,11 @@ class RectArray(AntennaArray):
         weight = weight / np.sum(np.abs(weight))
 
         tilex = int(np.ceil(self.spacingx-0.5))*2+1
-        k_az = 0.5*np.linspace(-tilex, tilex, nfft_az*tilex)/self.spacingx
+        k_az = 0.5*np.linspace(-tilex, tilex, nfft_az *
+                               tilex, endpoint=False)/self.spacingx
         tiley = int(np.ceil(self.spacingy-0.5))*2+1
-        k_el = 0.5*np.linspace(-tiley, tiley, nfft_el*tiley)/self.spacingy
+        k_el = 0.5*np.linspace(-tiley, tiley, nfft_el *
+                               tiley, endpoint=False)/self.spacingy
 
         if nfft_el <= 1 and nfft_az > 1:
             A = np.fft.fftshift(np.fft.fft(xy*weight, nfft_az, axis=0), axes=0)
