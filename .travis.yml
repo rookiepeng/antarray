@@ -13,7 +13,7 @@ install:
 
 # command to run tests
 script:
-  - python -m setup.py build_ext
+  - python setup.py build_ext
 
 branches:
     only:
