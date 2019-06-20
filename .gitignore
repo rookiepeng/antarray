@@ -108,3 +108,5 @@ venv.bak/
 release/
 
 .vscode/
+
+examples/antarray/
