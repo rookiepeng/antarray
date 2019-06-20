@@ -70,48 +70,36 @@ class AntennaArray:
         self.x = x
         self.y = y
 
-    def get_pattern(self, u,
-                    v,
-                    weight=None,
-                    polar=True):
+    def get_pattern(self, azimuth,
+                    elevation,
+                    weight=None):
         """
         Calculate the array factor
 
         Parameters
         ----------
-        u : 1-D array
-            If `polar` is `True': angles for calculation (deg)
-            If `polar` is `False': directional cosines,
-            $u=sin(\theta)cos(\phi)$
-        v : 1-D array
-            If `polar` is `True': angles for calculation (deg)
-            If `polar` is `False': directional cosines,
-            $v=sin(\theta)sin(\phi)$
+        azimuth : 1-D array
+            Azimuth angles (deg)
+        elevation : 1-D array
+            Elevation angles (deg)
         weight : 1-D array (complex), optional
             Weightings for array elements (default is None)
-        polar : boolean
-            Indicate the types of `u` and `v`
 
         Returns
         -------
         array_factor : 1-D array
             Array pattern in linear scale
-        u : 1-D array
-            Directional cosines
-        v : 1-D array
-            Directional cosines
+        azimuth : 1-D array
+            Azimuth angles
+        elevation : 1-D array
+            Elevation angles
         """
 
         size = len(self.x)
 
-        if polar:
-            theta_grid, phi_grid = np.meshgrid(u, v)
-            u_grid = np.sin(theta_grid / 180 * np.pi) * \
-                np.cos(phi_grid/180*np.pi)
-            v_grid = np.sin(theta_grid / 180 * np.pi) * \
-                np.sin(phi_grid/180*np.pi)
-        else:
-            u_grid, v_grid = np.meshgrid(u, v)
+        azimuth_grid, elevation_grid = np.meshgrid(azimuth, elevation)
+        u_grid = np.sin(azimuth_grid / 180 * np.pi)
+        v_grid = np.sin(elevation_grid/180*np.pi)
 
         if weight is None:
             weight = np.ones(size)
@@ -120,9 +108,7 @@ class AntennaArray:
 
         for idx in range(0, size):
             AF = AF + \
-                np.exp(1j * 2 * np.pi *
+                np.exp(-1j * 2 * np.pi *
                        (self.x[idx]*u_grid + self.y[idx]*v_grid)) * weight[idx]
 
-        return {'u': u_grid,
-                'v': v_grid,
-                'array_factor': AF}
+        return {'array_factor': np.transpose(AF)}
