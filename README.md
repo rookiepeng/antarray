@@ -11,13 +11,22 @@ The backend library for [Antenna Array Analysis](https://github.com/rookiepeng/a
 ## Features:
 
 - Linear array analysis
-- 2-D planar array analysis
+- 2-D rectangular planar array analysis
 - Arbitrary array analysis
 
 ## Requires:
 
+- Python 2.7+ or 3.x
+- numpy
+- scipy
+
 ## Installation:
+
+- Copy `antarray` folder to your project
 
 ## Usage:
 
+- [Linear array](https://github.com/rookiepeng/antarray/blob/master/examples/linear-array.ipynb)
+- [Rectangular array](https://github.com/rookiepeng/antarray/blob/master/examples/rectangular-planar-array.ipynb)
+- [Arbitrary array](https://github.com/rookiepeng/antarray/blob/master/examples/arbitrary-array.ipynb)
 
