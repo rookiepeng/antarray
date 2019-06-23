@@ -183,6 +183,10 @@ class RectArray(AntennaArray):
         dict(
             'array_factor' : 1-D array or 2-D array
                 Antenna array pattern.
+            'x' : 1-D array
+                Horizontal locations of the array elements
+            'y' : 1-D array
+                Vertical locations of the array elements
             'weight' : 1-D array
                 Weights for array elements
             'azimuth' : 1-D array
@@ -270,6 +274,8 @@ class RectArray(AntennaArray):
 
         return {
             'array_factor': AF,
+            'x': self.x,
+            'y': self.y,
             'weight': weight.ravel(order='F'),
             'azimuth': azimuth,
             'elevation': elevation}
