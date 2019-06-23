@@ -16,7 +16,7 @@ The backend library for [Antenna Array Analysis](https://github.com/rookiepeng/a
 
 ## Requires:
 
-- Python 2.7+ or 3.x
+- Python 3.x
 - numpy
 - scipy
 
