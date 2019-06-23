@@ -25,13 +25,16 @@ steps:
 
 - script: |
     python -m pip install --upgrade pip
-    pip install -r requirements.txt
+#    pip install -r requirements.txt
   displayName: 'Install dependencies'
 
 - script: |
     pip install numpy scipy
     pip install pytest pytest-azurepipelines
-    pip install cython
     pytest
+  displayName: 'pytest'
+
+- script: |
+    pip install cython
     python setup.py build_ext
-  displayName: 'unit test'
+  displayName: 'cython'
