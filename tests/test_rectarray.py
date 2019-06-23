@@ -4,6 +4,7 @@ import numpy.testing as npt
 
 
 def test_rectarray():
+    print('#### Test RectArray ####')
     sizex = 16
     rect_array = RectArray(sizex=sizex)
     assert np.array_equal(rect_array.x, np.arange(0, sizex, 1)*0.5)

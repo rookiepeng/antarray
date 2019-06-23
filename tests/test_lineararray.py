@@ -3,6 +3,7 @@ import numpy as np
 
 
 def test_lineararray():
+    print('#### Test LinearArray ####')
     lin_array = LinearArray(size=16)
     assert np.array_equal(lin_array.x, np.arange(0, 16, 1)*0.5)
     assert np.array_equal(lin_array.y, np.zeros(16))
