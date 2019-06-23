@@ -15,5 +15,4 @@ def test_lineararray():
     lin_array.update_parameters(spacing=0.5)
     data = lin_array.get_pattern(theta=theta, beam_loc=10)
     assert np.max(np.abs(data['array_factor'])) == 1
-    print(np.abs(data['array_factor']))
     assert theta[np.argmax(np.abs(data['array_factor']))] == 10
