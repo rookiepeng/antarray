@@ -13,6 +13,6 @@ def test_lineararray():
 
     theta = np.arange(-90, 90, 1)
     lin_array.update_parameters(spacing=0.5)
-    data = lin_array.get_pattern(theta=theta, beam_loc=10)
-    assert np.max(np.abs(data['array_factor'])) == 1
-    assert theta[np.argmax(np.abs(data['array_factor']))] == 10
+    pattern_data = lin_array.get_pattern(theta=theta, beam_loc=10)
+    assert np.max(np.abs(pattern_data['array_factor'])) == 1
+    assert theta[np.argmax(np.abs(pattern_data['array_factor']))] == 10
