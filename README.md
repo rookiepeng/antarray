@@ -3,7 +3,7 @@
 
 # AntArray
 
-Antenna array analysis tool bulit with Python.
+Antenna array analysis tool built with Python.
 
 The backend library for [Antenna Array Analysis](https://github.com/rookiepeng/antenna-array-analysis):
 
