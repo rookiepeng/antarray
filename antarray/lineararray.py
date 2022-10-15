@@ -42,7 +42,7 @@
 
 import numpy as np
 from scipy import signal
-from antarray import AntennaArray
+from antarray.antarray import AntennaArray
 
 
 class LinearArray(AntennaArray):
