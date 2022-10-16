@@ -1,6 +1,3 @@
-[![Build Status](https://api.travis-ci.org/rookiepeng/antarray.svg?branch=master)](https://travis-ci.org/rookiepeng/antarray)
-[![Build Status](https://rookiepeng.visualstudio.com/antarray/_apis/build/status/rookiepeng.antarray?branchName=master)](https://rookiepeng.visualstudio.com/antarray/_build/latest?definitionId=2&branchName=master)
-
 # AntArray
 
 Antenna array analysis tool built with Python.
