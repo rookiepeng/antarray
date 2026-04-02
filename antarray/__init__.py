@@ -33,7 +33,7 @@
 import numpy
 from scipy import signal
 
-from .antennaarray import AntennaArray
-from .lineararray import LinearArray
-from .rectarray import RectArray
+from .antenna_array import AntennaArray
+from .uniform_linear_array import UniformLinearArray
+from .uniform_rectangular_array import UniformRectangularArray
 __version__ = '1.0.5'
