@@ -1,171 +1,97 @@
-#!python
-# cython: language_level=3
 """
-    This script contains classes for a linear array
+Uniform linear array.
 
-    This script requires that `numpy` and `scipy` be installed within
-    the Python environment you are running this script in.
+A linear array is the degenerate rectangular array with a single row, so
+this class carries no pattern maths of its own: it is a convenience
+constructor plus ``size``/``spacing`` aliases over
+:class:`~arraybeam.uniform_rectangular_array.UniformRectangularArray`.
+Keeping a single implementation of the array factor is what guarantees
+that a linear array and the equivalent 1-row rectangular array return
+identical patterns and identical weights.
 
-    This file can be imported as a module and contains the following
-    class:
-
-    * LinearArray
-
-    ----------
-    AntArray - Antenna Array Analysis Module
-    Copyright (C) 2018 - 2019  Zhengyu Peng
-    E-mail: zpeng.me@gmail.com
-    Website: https://zpeng.me
-
-    `                      `
-    -:.                  -#:
-    -//:.              -###:
-    -////:.          -#####:
-    -/:.://:.      -###++##:
-    ..   `://:-  -###+. :##:
-           `:/+####+.   :##:
-    .::::::::/+###.     :##:
-    .////-----+##:    `:###:
-     `-//:.   :##:  `:###/.
-       `-//:. :##:`:###/.
-         `-//:+######/.
-           `-/+####/.
-             `+##+.
-              :##:
-              :##:
-              :##:
-              :##:
-              :##:
-               .+:
-
+Copyright (C) 2018-2026 Zhengyu Peng <zpeng.me@gmail.com>
+SPDX-License-Identifier: MIT
 """
 
-import numpy as np
+from __future__ import annotations
+
 from .uniform_rectangular_array import UniformRectangularArray
+
+__all__ = ["UniformLinearArray"]
 
 
 class UniformLinearArray(UniformRectangularArray):
-    """
-    A class defines basic parameters of a linear array.
-    Inheritance of UniformRectangularArray (special case with sizey=1)
+    """A uniformly spaced linear array along the x-axis.
 
-    ...
+    Parameters
+    ----------
+    size : int
+        Number of elements in the array.
+    spacing : float, optional
+        Element spacing, normalised to the wavelength. (default is 0.5)
 
     Attributes
     ----------
     size : int
-        Total size of the linear array
+        Number of elements (read-only alias of ``sizex``).
     spacing : float
-        Spacing between antenna elements
-        (Normalized to wavelength)
+        Element spacing (read-only alias of ``spacingx``).
+
+    Notes
+    -----
+    Patterns come from the inherited methods.  Use
+    :meth:`~arraybeam.antenna_array.AntennaArray.get_pattern` for an
+    arbitrary azimuth grid::
+
+        ula.get_pattern(azimuth, beam_az=30, taper=np.hanning(ula.size))
+
+    or :meth:`UniformRectangularArray.get_pattern_az
+    <arraybeam.uniform_rectangular_array.UniformRectangularArray.get_pattern_az>`
+    for the FFT-sampled grid::
+
+        ula.get_pattern_az(nfft=1024, beam_az=30, weight_x=np.hanning(ula.size))
     """
 
-    def __init__(self, size, spacing=0.5):
-        """
+    _PARAMETERS = ("size", "spacing")
+    _ALIASES = {"size": "sizex", "spacing": "spacingx"}
+
+    def __init__(self, size: int, spacing: float = 0.5) -> None:
+        super().__init__(sizex=size, sizey=1, spacingx=spacing, spacingy=spacing)
+
+    @property
+    def size(self) -> int:
+        """Number of elements in the array."""
+        return self.sizex
+
+    @property
+    def spacing(self) -> float:
+        """Element spacing, normalised to the wavelength."""
+        return self.spacingx
+
+    def update_parameters(self, **kwargs) -> None:
+        """Update the array size and/or spacing in place.
+
         Parameters
         ----------
-        size : int
-            Total size of the linear array
+        size : int, optional
+            New number of elements.
         spacing : float, optional
-            Spacing between antenna elements
-            (Normalized to wavelength), (default is 0.5)
+            New element spacing, normalised to the wavelength.
+
+        Raises
+        ------
+        TypeError
+            If an unrecognised parameter name is given.
         """
-
-        self.size = size
-        self.spacing = spacing
-        # Initialize as 1D rectangular array (1 row)
-        UniformRectangularArray.__init__(self, sizex=size, sizey=1, spacingx=spacing, spacingy=0.5)
-
-    def update_parameters(self, **kwargs):
-        """
-        Update linear array parameters
-
-        Parameters
-        ----------
-        size : int
-            Total size of the linear array
-        spacing : float
-            Spacing between antenna elements
-        """
-
-        keys = ['size', 'spacing']
-        self.__dict__.update((k, v) for k, v in kwargs.items() if k in keys)
-        self.__init__(self.size, self.spacing)
-
-    def get_pattern(self, azimuth=None, nfft=512, beam_az=0, weight=None):
-        """
-        Calculate the array factor for a linear array
-
-        Parameters
-        ----------
-        azimuth : 1-D array, optional
-            Specific azimuth angles for calculation (deg). If provided, the array
-            factor will be interpolated to these angles. Takes priority over nfft.
-            (default is None)
-        nfft : int, optional
-            Number of FFT points for beamforming. Used when azimuth is None.
-            (default is 512)
-        beam_az : float, optional
-            Steering angle in azimuth (deg). (default is 0)
-        weight : 1-D array, optional
-            Amplitude tapering weights for array elements.
-            Array length must equal size. If None, uniform weighting is used.
-            (default is None)
-
-        Returns
-        -------
-        dict(
-            'array_factor' : 1-D array
-                Array pattern in linear scale
-            'weight' : 1-D array
-                Complex weights applied to array elements (includes steering + taper)
-            'azimuth' : 1-D array
-                Azimuth angles (deg) corresponding to array_factor
-        )
-        """
-        # Use inherited UniformRectangularArray.get_pattern_az for FFT method
-        if azimuth is not None:
-            # Direct array factor calculation (non-FFT method)
-            # Apply amplitude weights (default to uniform if not provided)
-            if weight is None:
-                weight_applied = np.ones(self.size)
-            else:
-                weight_applied = weight
-            
-            # Apply beam steering phase
-            element_weights = weight_applied * np.exp(
-                -1j * 2 * np.pi * self.x * np.sin(np.radians(beam_az))
+        unknown = set(kwargs) - set(self._PARAMETERS)
+        if unknown:
+            raise TypeError(
+                f"unknown parameter(s): {', '.join(sorted(unknown))}; "
+                f"expected any of {', '.join(self._PARAMETERS)}"
             )
-            
-            # Normalize weights
-            element_weights = element_weights / np.sum(np.abs(element_weights))
-            
-            # Calculate array factor using direct summation
-            # AF(azimuth) = sum_i weight[i] * exp(j * 2*pi * x[i] * sin(azimuth))
-            azimuth_grid, x_grid = np.meshgrid(np.radians(azimuth), self.x)
-            steering_matrix = np.exp(1j * 2 * np.pi * x_grid * np.sin(azimuth_grid))
-            AF = element_weights @ steering_matrix
-            
-            return {
-                'array_factor': AF,
-                'weight': element_weights,
-                'azimuth': azimuth,
-                'raw_fft': None
-            }
-        else:
-            # Use FFT method for efficiency
-            result = self.get_pattern_az(
-                nfft=nfft,
-                beam_az=beam_az,
-                beam_el=0,
-                weight_x=weight,
-                weight_y=None,
-                cut_el=0,
-            )
-            
-            return {
-                'array_factor': result['array_factor'],
-                'weight': result['weight'],
-                'azimuth': result['azimuth'],
-                'raw_fft': result['raw_fft'].flatten()  # Flatten to 1D since it's a linear array
-            }
+        mapped = {self._ALIASES[k]: v for k, v in kwargs.items()}
+        # The single row must keep spacingy == spacingx so that the array
+        # stays the exact degenerate case of the rectangular array.
+        if "spacingx" in mapped:
+            mapped["spacingy"] = mapped["spacingx"]
+        super().update_parameters(**mapped)

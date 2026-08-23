@@ -1,11 +1,12 @@
-from arraybeam import UniformRectangularArray
 import numpy as np
 import numpy.testing as npt
 
+from arraybeam import UniformRectangularArray
 
 # ---------------------------------------------------------------------------
 # Initialisation
 # ---------------------------------------------------------------------------
+
 
 def test_rectarray_default_is_linear():
     """Default sizey=1 → flat 1-D element layout."""
@@ -39,6 +40,7 @@ def test_rectarray_custom_spacing():
 # update_parameters
 # ---------------------------------------------------------------------------
 
+
 def test_rectarray_update_sizex():
     arr = UniformRectangularArray(sizex=8)
     arr.update_parameters(sizex=4)
@@ -64,10 +66,11 @@ def test_rectarray_update_spacing():
 # get_pattern_2d
 # ---------------------------------------------------------------------------
 
+
 def test_rectarray_2d_return_keys():
     arr = UniformRectangularArray(sizex=8)
     result = arr.get_pattern_2d()
-    for key in ('array_factor', 'x', 'y', 'weight', 'azimuth', 'elevation'):
+    for key in ("array_factor", "x", "y", "weight", "azimuth", "elevation"):
         assert key in result
 
 
@@ -75,15 +78,15 @@ def test_rectarray_2d_output_shape():
     arr = UniformRectangularArray(sizex=8, sizey=4)
     nfft_az, nfft_el = 64, 64
     result = arr.get_pattern_2d(nfft_az=nfft_az, nfft_el=nfft_el)
-    az_len = len(result['azimuth'])
-    el_len = len(result['elevation'])
-    assert result['array_factor'].shape == (az_len, el_len)
+    az_len = len(result["azimuth"])
+    el_len = len(result["elevation"])
+    assert result["array_factor"].shape == (az_len, el_len)
 
 
 def test_rectarray_2d_max_is_one():
     arr = UniformRectangularArray(sizex=16)
     result = arr.get_pattern_2d()
-    npt.assert_almost_equal(np.max(np.abs(result['array_factor'])), 1.0)
+    npt.assert_almost_equal(np.max(np.abs(result["array_factor"])), 1.0)
 
 
 def test_rectarray_2d_broadside_peak():
@@ -91,9 +94,9 @@ def test_rectarray_2d_broadside_peak():
     arr = UniformRectangularArray(sizex=16)
     result = arr.get_pattern_2d(nfft_az=256)
     peak_idx = np.unravel_index(
-        np.argmax(np.abs(result['array_factor'])),
-        result['array_factor'].shape)
-    assert result['azimuth'][peak_idx[0]] == 0
+        np.argmax(np.abs(result["array_factor"])), result["array_factor"].shape
+    )
+    assert result["azimuth"][peak_idx[0]] == 0
 
 
 def test_rectarray_2d_uniform_weight_normalisation():
@@ -101,69 +104,72 @@ def test_rectarray_2d_uniform_weight_normalisation():
     sizex = 16
     arr = UniformRectangularArray(sizex=sizex)
     result = arr.get_pattern_2d(nfft_az=256)
-    npt.assert_array_equal(result['weight'], np.ones(sizex, dtype=complex) / sizex)
+    npt.assert_array_equal(result["weight"], np.ones(sizex, dtype=complex) / sizex)
 
 
 def test_rectarray_2d_steered_weights():
     """beam_az=30, sizex=4, sizey=2 → weights match expected steering phases."""
     arr = UniformRectangularArray(sizex=4, sizey=2)
     result = arr.get_pattern_2d(beam_az=30)
-    npt.assert_almost_equal(result['weight'], np.array(
-        [0.125, 0.125j, -0.125, -0.125j, 0.125, 0.125j, -0.125, -0.125j]))
+    npt.assert_almost_equal(
+        result["weight"],
+        np.array([0.125, 0.125j, -0.125, -0.125j, 0.125, 0.125j, -0.125, -0.125j]),
+    )
 
 
 def test_rectarray_2d_azimuth_range():
     arr = UniformRectangularArray(sizex=8)
     result = arr.get_pattern_2d()
-    assert np.all(result['azimuth'] >= -90)
-    assert np.all(result['azimuth'] <= 90)
-    assert np.all(result['elevation'] >= -90)
-    assert np.all(result['elevation'] <= 90)
+    assert np.all(result["azimuth"] >= -90)
+    assert np.all(result["azimuth"] <= 90)
+    assert np.all(result["elevation"] >= -90)
+    assert np.all(result["elevation"] <= 90)
 
 
 # ---------------------------------------------------------------------------
 # get_pattern_az
 # ---------------------------------------------------------------------------
 
+
 def test_rectarray_az_return_keys():
     arr = UniformRectangularArray(sizex=8)
     result = arr.get_pattern_az()
-    for key in ('array_factor', 'raw_fft', 'x', 'y', 'weight', 'azimuth', 'elevation'):
+    for key in ("array_factor", "raw_fft", "x", "y", "weight", "azimuth", "elevation"):
         assert key in result
 
 
 def test_rectarray_az_is_1d():
     arr = UniformRectangularArray(sizex=8)
     result = arr.get_pattern_az(nfft=512)
-    assert result['array_factor'].ndim == 1
+    assert result["array_factor"].ndim == 1
 
 
 def test_rectarray_az_broadside_peak():
     arr = UniformRectangularArray(sizex=16)
     result = arr.get_pattern_az(nfft=1024, beam_az=0)
-    peak_az = result['azimuth'][np.argmax(np.abs(result['array_factor']))]
+    peak_az = result["azimuth"][np.argmax(np.abs(result["array_factor"]))]
     assert np.abs(peak_az) < 0.5
 
 
 def test_rectarray_az_steered_peak():
     arr = UniformRectangularArray(sizex=16)
     result = arr.get_pattern_az(nfft=2048, beam_az=30)
-    peak_az = result['azimuth'][np.argmax(np.abs(result['array_factor']))]
+    peak_az = result["azimuth"][np.argmax(np.abs(result["array_factor"]))]
     assert np.abs(peak_az - 30) < 0.5
 
 
 def test_rectarray_az_max_is_one():
     arr = UniformRectangularArray(sizex=16)
     result = arr.get_pattern_az(nfft=512)
-    npt.assert_almost_equal(np.max(np.abs(result['array_factor'])), 1.0)
+    npt.assert_almost_equal(np.max(np.abs(result["array_factor"])), 1.0)
 
 
 def test_rectarray_az_cut_el_fixed():
     """'elevation' key in az-cut result should be a scalar."""
     arr = UniformRectangularArray(sizex=8)
     result = arr.get_pattern_az(beam_az=0, cut_el=10)
-    assert np.ndim(result['elevation']) == 0
-    assert float(result['elevation']) == 10
+    assert np.ndim(result["elevation"]) == 0
+    assert float(result["elevation"]) == 10
 
 
 def test_rectarray_az_weight_taper():
@@ -172,37 +178,38 @@ def test_rectarray_az_weight_taper():
     uniform_result = arr.get_pattern_az()
     taper = np.hanning(8)
     tapered_result = arr.get_pattern_az(weight_x=taper)
-    assert not np.allclose(uniform_result['weight'], tapered_result['weight'])
+    assert not np.allclose(uniform_result["weight"], tapered_result["weight"])
 
 
 # ---------------------------------------------------------------------------
 # get_pattern_el
 # ---------------------------------------------------------------------------
 
+
 def test_rectarray_el_return_keys():
     arr = UniformRectangularArray(sizex=4, sizey=4)
     result = arr.get_pattern_el()
-    for key in ('array_factor', 'raw_fft', 'x', 'y', 'weight', 'azimuth', 'elevation'):
+    for key in ("array_factor", "raw_fft", "x", "y", "weight", "azimuth", "elevation"):
         assert key in result
 
 
 def test_rectarray_el_is_1d():
     arr = UniformRectangularArray(sizex=4, sizey=4)
     result = arr.get_pattern_el(nfft=512)
-    assert result['array_factor'].ndim == 1
+    assert result["array_factor"].ndim == 1
 
 
 def test_rectarray_el_broadside_peak():
     arr = UniformRectangularArray(sizex=4, sizey=16)
     result = arr.get_pattern_el(nfft=1024, beam_el=0)
-    peak_el = result['elevation'][np.argmax(np.abs(result['array_factor']))]
+    peak_el = result["elevation"][np.argmax(np.abs(result["array_factor"]))]
     assert np.abs(peak_el) < 0.5
 
 
 def test_rectarray_el_steered_peak():
     arr = UniformRectangularArray(sizex=4, sizey=16)
     result = arr.get_pattern_el(nfft=2048, beam_el=20)
-    peak_el = result['elevation'][np.argmax(np.abs(result['array_factor']))]
+    peak_el = result["elevation"][np.argmax(np.abs(result["array_factor"]))]
     assert np.abs(peak_el - 20) < 0.5
 
 
@@ -210,5 +217,5 @@ def test_rectarray_el_cut_az_fixed():
     """'azimuth' key in el-cut result should be a scalar."""
     arr = UniformRectangularArray(sizex=4, sizey=8)
     result = arr.get_pattern_el(beam_az=0, cut_az=15)
-    assert np.ndim(result['azimuth']) == 0
-    assert float(result['azimuth']) == 15
+    assert np.ndim(result["azimuth"]) == 0
+    assert float(result["azimuth"]) == 15
