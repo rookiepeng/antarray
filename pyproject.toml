@@ -1,0 +1,60 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "arraybeam"
+dynamic = ["version"]
+description = "Antenna array analysis in Python"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.9"
+authors = [{ name = "Zhengyu Peng", email = "zpeng.me@gmail.com" }]
+keywords = ["antenna", "array", "beamforming", "radar", "phased-array"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering",
+]
+dependencies = ["numpy>=1.20"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7", "pytest-cov", "ruff"]
+examples = ["matplotlib", "jupyter"]
+
+[project.urls]
+Homepage = "https://github.com/rookiepeng/arraybeam"
+Repository = "https://github.com/rookiepeng/arraybeam"
+Issues = "https://github.com/rookiepeng/arraybeam/issues"
+
+[tool.hatch.version]
+path = "arraybeam/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["arraybeam"]
+
+[tool.hatch.build.targets.sdist]
+include = ["arraybeam", "tests", "examples", "README.md", "LICENSE"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+filterwarnings = ["error"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "NPY"]
+
+[tool.coverage.run]
+source = ["arraybeam"]
