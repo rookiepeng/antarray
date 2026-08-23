@@ -5,10 +5,6 @@
 
 Antenna array analysis in Python.
 
-The backend library for [Antenna Array Analysis](https://github.com/rookiepeng/antenna-array-analysis):
-
-![alt](https://github.com/rookiepeng/antenna-array-analysis/blob/master/docs/aaa_v1.0.0.gif)
-
 ## Features
 
 - Arbitrary array geometries with direct array-factor summation
